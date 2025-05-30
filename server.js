@@ -1,63 +1,50 @@
-const express = require("express");
-const path = require("path");
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Serve static files from the 'public' folder
-app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
 const express = require('express');
+const path = require('path');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files
-app.use(express.static('public'));
+// Middleware to serve static files and parse form data
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// POST endpoint for orders
+// Route to serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// POST endpoint to receive order and send email
 app.post('/send-order', async (req, res) => {
   const { name, address, phone, cart, location, paymentMethod, instructions } = req.body;
 
-  // Define recipient emails based on location
-  const locationEmails = {
-    Tlajomulco: 'tlajomulco@example.com',
-    Zapopan: 'zapopan@example.com',
-    // Add more as needed
-  };
-
-  const recipientEmail = locationEmails[location];
-  if (!recipientEmail) return res.status(400).send('Invalid location selected');
+  // Send all orders to your email for now
+  const recipientEmail = 'oborawatabanost@gmail.com';
 
   // Configure the email transport
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'oborawatabanost@gmail.com', // your email
-      pass: 'qxkl tssi bjqw iren',    // app password, NOT your email password
+      user: 'oborawatabanost@gmail.com', // Your Gmail
+      pass: 'qxkltssibjqwiren'           // Your 16-digit app password (NO SPACES)
     },
   });
 
+  // Format cart items
   const cartDetails = cart.map(item => `${item.quantity}x ${item.name} ($${item.price})`).join('\n');
 
+  // Email content
   const mailOptions = {
-    from: 'your_email@gmail.com',
+    from: 'oborawatabanost@gmail.com',
     to: recipientEmail,
-    subject: `Nuevo pedido para ${location}`,
+    subject: `Nuevo pedido desde ${location}`,
     text: `
 Nombre: ${name}
 Teléfono: ${phone}
 Dirección: ${address}
+Ubicación seleccionada: ${location}
 Método de pago: ${paymentMethod}
 Instrucciones: ${instructions}
 
@@ -70,20 +57,12 @@ ${cartDetails}
     await transporter.sendMail(mailOptions);
     res.status(200).send('Pedido enviado con éxito');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al enviar el pedido');
+    console.error('Error al enviar el correo:', error);
+    res.status(500).send('Hubo un problema al enviar el pedido');
   }
 });
 
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'oborawatabanost@gmail.com',       // Your full Gmail address
-    pass: 'qxkl tssi bjqw iren'            // The 16-character app password you generated
-  }
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
