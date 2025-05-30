@@ -78,3 +78,12 @@ ${cartDetails}
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'your-email@gmail.com',       // Your full Gmail address
+    pass: 'your-app-password'            // The 16-character app password you generated
+  }
+});
