@@ -20,8 +20,18 @@ app.get('/', (req, res) => {
 app.post('/send-order', async (req, res) => {
   const { name, address, phone, cart, location, paymentMethod, instructions } = req.body;
 
-  // Send all orders to your email for now
-  const recipientEmail = 'oborawatabanost@gmail.com';
+  // Select recipient email based on location
+  let recipientEmail;
+  switch (location) {
+    case 'guadalajara':
+      recipientEmail = 'guruobed@gmail.com';
+      break;
+    case 'zapopan':
+      recipientEmail = 'zapopan@example.com';
+      break;
+    default:
+      recipientEmail = 'oborawatabanost@gmail.com'; // default fallback
+  }
 
   // Configure the email transport
   let transporter = nodemailer.createTransport({
