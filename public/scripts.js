@@ -90,15 +90,17 @@ function checkOrderHours() {
 
 document.addEventListener("DOMContentLoaded", checkOrderHours);
 document.getElementById("send-order-btn").addEventListener("click", async () => {
-  const name = document.getElementById("name").value;
-  const address = document.getElementById("address").value;
-  const phone = document.getElementById("phone").value;
-  const location = document.getElementById("location").value;
-  const paymentMethod = document.getElementById("payment-method").value;
-  const instructions = document.getElementById("instructions").value;
+ const name = document.getElementById("customer-name").value;
+const email = document.getElementById("customer-email").value;
+const address = document.getElementById("customer-address").value;
+const instructions = document.getElementById("additional-comments").value;
+const phone = ""; // No phone field yet
+const location = document.getElementById("location").value;
+const paymentMethod = document.getElementById("payment-method").value;
 
   const orderData = {
     name,
+    email,
     address,
     phone,
     location,
